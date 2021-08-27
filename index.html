@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <title>Document</title>
+    <style>
+        body{
+            background: #ECE9E6;  /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #FFFFFF, #ECE9E6);  /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to right, #FFFFFF, #ECE9E6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+            }
+        h1{
+            font-family: 'Brush Script MT', cursive;
+            color: rgba(56, 54, 54, 0.979);
+        }
+    </style>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/JavaScript">
+        let socket = io()
+        socket.on('servermsg', (msg)=>{
+                let chat = document.getElementById("chat")
+                let serverMessage = document.createElement('div');
+                serverMessage.textContent = msg
+                chat.appendChild(serverMessage);
+            })
+        var flag = false
+        send = (e) =>{
+            let name = document.getElementById("name").value;
+            let message = document.getElementById("message").value;
+            data = { name, message}
+            socket.emit("obj",data)
+            e.preventDefault();
+            document.getElementById("message").value= ""
+            flag= true
+            }
+            socket.on('output', (data) => {
+                console.log(data);
+                    if(data.length && flag){
+                        let chat = document.getElementById("chat")
+                        let chatbox = document.createElement('div');
+                        chatbox.textContent = data[0].name+": "+data[0].message;
+                        chat.appendChild(chatbox);
+                    }
+                })    
+    </script>
+</head>
+<body>
+    <h1 class="text-center mt-4 display-1">Chatbox</h1>
+    <div class="container mt-4">
+        <label for="exampledivControlTextarea1" class="form-label">Let's chat </label>
+        <i class="fas fa-grin-beam"></i>
+        <input type="text" class="form-control" id="name" placeholder="Enter name..">
+        <br>
+        <div id="chat" class="card" style="height: 400px">
+        </div>
+        <br>
+        <textarea class="form-control" id="message" rows="2" placeholder="Enter message"></textarea>
+        <button type="submit" class="btn btn-outline-secondary mt-3 btn-lg" onclick="send(event)">Send</button>
+    </div>
+</body>
+</html>
